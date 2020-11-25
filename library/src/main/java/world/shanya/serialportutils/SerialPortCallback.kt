@@ -52,11 +52,15 @@ open class SerialPortCallback {
      */
     internal var connectedCallback: ConnectedCallback ?= null
     internal var _connectedCallback: _ConnectedCallback ?= null
+    internal var __connectedCallback: ConnectedCallback ?= null
     internal fun _getConnectedStatus(connectedCallback: _ConnectedCallback) {
         this._connectedCallback = connectedCallback
     }
     fun getConnectedStatus(connectedCallback: ConnectedCallback) {
         this.connectedCallback = connectedCallback
+    }
+    internal fun __getConnectedStatus(connectedCallback: ConnectedCallback) {
+        this.__connectedCallback = connectedCallback
     }
 
     /**

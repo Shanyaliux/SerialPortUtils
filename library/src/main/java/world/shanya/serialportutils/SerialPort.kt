@@ -8,6 +8,7 @@ import android.content.*
 import android.os.IBinder
 import android.text.Editable
 import android.text.InputType
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.text.method.ReplacementTransformationMethod
@@ -286,7 +287,7 @@ class SerialPort private constructor(private val activity: FragmentActivity): Se
     /**
      * 开始搜索
      */
-    fun doDiscover(): Boolean {
+    fun doDiscovery(): Boolean {
         if (!PermissionX.isGranted(activity, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
             PermissionX.init(activity)
                 .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -370,6 +371,9 @@ class SerialPort private constructor(private val activity: FragmentActivity): Se
 
                 connectedCallback?.invoke(true, device)
                 _connectedCallback?.invoke()
+                __connectedCallback?.invoke(true, device)
+
+                SPUtils.putString(activity,device)
 
                 MainScope().launch {
                     Toast.makeText(
@@ -388,6 +392,7 @@ class SerialPort private constructor(private val activity: FragmentActivity): Se
             }catch (e: IOException){
                 //设置连接状态为 false ，并弹出连接失败的 Toast 提示
                 _connectedCallback?.invoke()
+                __connectedCallback?.invoke(false, device)
                 MainScope().launch {
                     Toast.makeText(activity,activity.getString(R.string.connection_failed),Toast.LENGTH_SHORT).show()
                 }
@@ -503,4 +508,25 @@ class SerialPort private constructor(private val activity: FragmentActivity): Se
             send(data)
         }.start()
     }
+
+
+    /**
+     * 自动连接
+     */
+    internal fun autoConnection(context: Context): Boolean {
+        var isConnect = false
+        val name = SPUtils.getSPDeviceName(context)
+        val address = SPUtils.getSPDeviceAddress(context)
+        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(address)) {
+            connectDevice(Device(name.toString(), address.toString()))
+            __getConnectedStatus { status, device ->
+                isConnect = status
+            }
+        } else {
+            isConnect = false
+        }
+
+        return isConnect
+    }
+
 }

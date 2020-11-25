@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         serialPort.setSendDataType(SerialPort.SEND_HEX)
         serialPort.setEditTextHexLimit(editText)
 
+        val isConnect = serialPort.autoConnection(this)
 
         button.setOnClickListener {
             serialPort.openSearchPage()
