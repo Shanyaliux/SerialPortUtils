@@ -1,3 +1,4 @@
+include ':serialport'
 include ':library'
 include ':app'
 rootProject.name = "SerialPortUtil"
